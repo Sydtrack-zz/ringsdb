@@ -229,4 +229,118 @@ class ExcelController extends Controller {
 
 		return new Response($counter . " cards changed or added");
 	}
+
+	public function uploadTranslationFormAction() {
+		return $this->render('AppBundle:Excel:upload_translation_form.html.twig');
+	}
+
+	public function uploadTranslationProcessAction(Request $request) {
+		$locale = $request->get('locale');
+
+		/* @var $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
+		$uploadedFile = $request->files->get('upfile');
+		$inputFileName = $uploadedFile->getPathname();
+
+
+		$em = $this->getDoctrine()->getManager();
+		$excel = $this->get('phpexcel')->createPHPExcelObject($inputFileName);
+
+		//$things = array('type', 'sphere', 'cycle', 'pack');
+
+		$things = array(
+			'type' => array(
+				'count' => 0,
+				'elems' => array()
+			),
+			'sphere' => array(
+				'count' => 0,
+				'elems' => array()
+			),
+			'cycle' => array(
+				'count' => 0,
+				'elems' => array()
+			),
+			'pack' => array(
+				'count' => 0,
+				'elems' => array()
+			)
+		);
+		foreach($things as $thing => &$data) {
+			$thingSheet = $excel->getSheetByName($thing."s");
+			$entityName = 'AppBundle\\Entity\\'.ucfirst($thing);
+
+			$first = TRUE;
+			foreach($thingSheet->getRowIterator() as $row) {
+				if($first) {
+					$first = FALSE;
+					continue;
+				}
+
+				$englishName = $thingSheet->getCellByColumnAndRow(0, $row->getRowIndex())->getValue();
+				$translatedName = $thingSheet->getCellByColumnAndRow(1, $row->getRowIndex())->getValue();
+
+				$entity = $em->getRepository($entityName)->findOneBy(['name' => $englishName]);
+				if(!$entity) {
+					continue;
+				} else {
+					$entity->setTranslatableLocale($locale);
+					$entity->setName($translatedName);
+					$em->persist($entity);
+					$data['count']++;
+					$data['elems'][] = "$englishName => $translatedName";
+				}
+
+				$em->flush();
+			}
+		}	
+
+		$cardSheet = $excel->getSheetByName('cards');
+		$first = TRUE;
+		$cardCount = 0;
+		$cardErrorCount = array();
+		foreach($cardSheet->getRowIterator() as $row) {
+			if($first) {
+				$first = FALSE;
+				continue;
+			}
+
+			$code = sprintf("%05d", $cardSheet->getCellByColumnAndRow(5, $row->getRowIndex())->getValue());
+			$name = $cardSheet->getCellByColumnAndRow(6, $row->getRowIndex())->getValue();
+			$traits = $cardSheet->getCellByColumnAndRow(7, $row->getRowIndex())->getValue();
+			$text = $cardSheet->getCellByColumnAndRow(9, $row->getRowIndex())->getValue();
+			$flavor = $cardSheet->getCellByColumnAndRow(10, $row->getRowIndex())->getValue();
+			$card = $em->getRepository('AppBundle:Card')->findOneBy(['code' => $code]);
+			if(!$card) {
+				$cardErrorCount[] = $code;
+				continue;
+			} else {
+				$card->setTranslatableLocale($locale);
+				$card->setName($name);
+				$card->setTraits($traits);
+				$card->setText($text);
+				$card->setFlavor($flavor);
+				$em->persist($card);
+				$cardCount++;
+			}
+		}
+
+		$em->flush();
+
+		$result = "Translation into '$locale' done.\n\n";
+		foreach($things as $thing => $lastData) {
+			$result = $result . "Result on ".ucfirst($thing).": \n\n";
+			$result = $result . "   - Count: ".$lastData['count']."\n";
+			$result = $result . "   - Elems: \n";
+			foreach($lastData['elems'] as $elem) {
+				$result = $result. "      - ".$elem."\n";
+			}
+			
+		}
+		$result = $result."\n\n\nResult on Card: $cardCount cards translated (Errors: ".join(", ", $cardErrorCount).").";
+
+		$response = new Response($result);
+		$response->headers->set('Content-Type', 'text/plain; charset=utf-8');
+
+		return $response;
+	}
 }

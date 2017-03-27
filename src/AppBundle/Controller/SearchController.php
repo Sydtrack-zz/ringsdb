@@ -57,7 +57,7 @@ class SearchController extends Controller {
 
         $dbh = $this->getDoctrine()->getConnection();
 
-        $list_packs = $this->getDoctrine()->getRepository('AppBundle:Pack')->findBy([], ["dateRelease" => "ASC", "position" => "ASC"]);
+        $list_packs = $this->getDoctrine()->getRepository('AppBundle:Pack')->findAll();
         $packs = [];
         foreach ($list_packs as $pack) {
             /* @var $pack \AppBundle\Entity\Pack */
@@ -67,7 +67,7 @@ class SearchController extends Controller {
             ];
         }
 
-        $list_cycles = $this->getDoctrine()->getRepository('AppBundle:Cycle')->findBy([], ["position" => "ASC"]);
+        $list_cycles = $this->getDoctrine()->getRepository('AppBundle:Cycle')->findAll();
         $cycles = [];
         foreach ($list_cycles as $cycle) {
             /* @var $cycle \AppBundle\Entity\Cycle */
@@ -77,8 +77,8 @@ class SearchController extends Controller {
             ];
         }
 
-        $types = $this->getDoctrine()->getRepository('AppBundle:Type')->findBy([], ["name" => "ASC"]);
-        $spheres = $this->getDoctrine()->getRepository('AppBundle:Sphere')->findBy([], ["id" => "ASC"]);
+        $types = $this->getDoctrine()->getRepository('AppBundle:Type')->findAll();
+        $spheres = $this->getDoctrine()->getRepository('AppBundle:Sphere')->findAll();
 
         $traits = $this->get('cards_data')->getDistinctTraits();
         $traits = array_filter(array_keys($traits));
