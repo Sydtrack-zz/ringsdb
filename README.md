@@ -11,5 +11,5 @@ This guide assumes you know how to use the command-line and that your machine ha
 - run `composer install` (at the end it will ask for the database configuration parameters)
 - run `php app/console doctrine:database:create`
 - run `php app/console doctrine:schema:create`
-- import data into mysql
+- import data into mysql by importing the *.sql files
 - run `php app/console server:run`
