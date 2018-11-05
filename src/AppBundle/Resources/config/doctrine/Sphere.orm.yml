@@ -1,6 +1,10 @@
 AppBundle\Entity\Sphere:
     type: entity
     table: sphere
+    repositoryClass: AppBundle\Repository\SphereRepository
+    gedmo:
+        translation:
+            locale: locale
     oneToMany:
         cards:
             targetEntity: Card
@@ -20,6 +24,8 @@ AppBundle\Entity\Sphere:
             type: string
             length: 1024
             nullable: false
+            gedmo:
+                - translatable
         is_primary:
             type: boolean
             nullable: false

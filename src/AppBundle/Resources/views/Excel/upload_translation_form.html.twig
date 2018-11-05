@@ -1,0 +1,18 @@
+<form action="{{ path('excel_upload_translation_process') }}" method="post" enctype="multipart/form-data">
+    <p>
+	    <input type="file" name="upfile">
+    </p>
+    <p>
+    	<select name="locale">
+    		<option value="">--Select a locale</option>
+    		{% for locale in supported_locales %}
+    		{% if locale != default_locale %}
+    		<option value="{{locale}}">{{locale}} - {{locale_names[locale]}}</option>
+    		{% endif %}
+    		{% endfor %}
+    	</select>
+    </p>
+    <p>
+    	<input type="submit" value="Submit">
+    </p>
+</form>

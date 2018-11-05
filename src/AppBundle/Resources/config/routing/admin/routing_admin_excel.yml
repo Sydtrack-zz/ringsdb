@@ -21,3 +21,15 @@ excel_upload_process:
     methods: [POST]
     defaults:
         _controller: AppBundle:Excel:uploadProcess
+
+excel_upload_translation_form:
+    path: /uploadTranslation
+    methods: [GET]
+    defaults:
+        _controller: AppBundle:Excel:uploadTranslationForm
+
+excel_upload_translation_process:
+    path: /uploadTranslation
+    methods: [POST]
+    defaults:
+        _controller: AppBundle:Excel:uploadTranslationProcess        

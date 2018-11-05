@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-class Card {
+class Card implements \Gedmo\Translatable\Translatable {
     /**
      * @var integer
      */
@@ -708,5 +708,15 @@ class Card {
      */
     public function getHasErrata() {
         return $this->hasErrata;
+    }
+
+    /*
+    * I18N vars
+    */
+    private $locale = 'en';
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

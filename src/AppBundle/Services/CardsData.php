@@ -112,8 +112,13 @@ class CardsData {
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->doctrine;
 
-        $qb = $em->getRepository('AppBundle:Card')->createQueryBuilder('c');
-        $qb->leftJoin('c.pack', 'p')->leftJoin('p.cycle', 'y')->leftJoin('c.type', 't')->leftJoin('c.sphere', 's');
+        $repo = $this->doctrine->getRepository('AppBundle:Card');
+        $qb = $repo->createQueryBuilder('c')
+            ->select('c', 'p', 'y', 't', 's')
+            ->leftJoin('c.pack', 'p')
+            ->leftJoin('p.cycle', 'y')
+            ->leftJoin('c.type', 't')
+            ->leftJoin('c.sphere', 's');
         $qb2 = null;
         $qb3 = null;
 
@@ -402,8 +407,7 @@ class CardsData {
         }
         $qb->addOrderBy('c.name');
         $qb->addOrderBy('c.code');
-        $query = $qb->getQuery();
-        $rows = $query->getResult();
+        $rows = $repo->getResult($qb);
 
         return $rows;
     }
@@ -586,11 +590,7 @@ class CardsData {
 		 * @var $em \Doctrine\ORM\EntityManager
 		 */
 		$em = $this->doctrine->getManager();
-		$qb = $em->createQueryBuilder();
-		$qb->from('AppBundle:Card', 'c');
-		$qb->select('c.traits');
-		$qb->distinct();
-		$result = $qb->getQuery()->getResult();
+        $result = $em->getRepository('AppBundle:Card')->findTraits();
 
 		$traits = [];
 		foreach ($result as $card) {

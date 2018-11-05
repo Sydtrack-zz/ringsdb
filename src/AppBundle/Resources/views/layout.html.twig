@@ -10,6 +10,11 @@
     <link rel="icon" sizes="192x192" href="/icon-192.png"/>
     <link rel="apple-touch-icon" sizes="120x120" href="/icon-120.png"/>
     <link rel="shortcut icon" href="/favicon.ico?v=2"/>
+    {% if app.request.locale != "en" and app.request.attributes.get('_route') != "" %}
+      {% set _route_params = app.request.attributes.get('_route_params')|default({}) %}
+      {% set _get_params = app.request.query.all()|default({}) %}
+      <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), _route_params|merge(_get_params)|merge({'_locale': 'en'})) }}"/>
+    {% endif %}
 
     {% if pagedescription is defined %}
         <meta name="description" content="{{ pagedescription }} &middot; RingsDB, a LotR LCG Deckbuilder">
@@ -24,6 +29,7 @@
         'bundles/app/cdn/css/font-awesome.min.css'
         'bundles/app/cdn/css/jquery.qtip.css'
         'bundles/app/cdn/css/bootstrap-markdown.min.css'
+        'bundles/app/cdn/css/languages.css'
         'bundles/app/css/bootstrap.css'
         'bundles/app/css/style.scss'
         'bundles/app/css/icons.scss' %}
@@ -87,6 +93,27 @@
                             <li id="login">
                                 <a href="#" class="disabled"><span class="fa fa-user"></span></a>
                             </li>
+                            <!-- locale selection -->
+                            {% if _route is not defined or _route is not empty %}
+                            <li class="dropdown">
+                              <a class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="lang-sm" lang="{{ app.request.locale | default(default_locale) }}"></span>
+                                <span class="caret">
+                              </a>
+                              <ul class="dropdown-menu">
+                                {% for supported_locale in supported_locales %}
+                                  {% set _route = app.request.attributes.get('_route') %}
+                                  {% set _route_params = app.request.attributes.get('_route_params')|default({})|merge(app.request.query.all) %}
+                                  {% set _get_params = app.request.attributes.get('_get_params')|default({}) %}
+                                  <li>
+                                    <a href="{{ path(_route, _route_params|merge(_get_params)|merge({'_locale': supported_locale})) }}">
+                                      <span lang="{{ supported_locale }}" class="lang-sm lang-lbl lang-lbl-full"></span>
+                                    </a>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            {% endif %}
                         </ul>
                         <form class="navbar-form navbar-right visible-lg-block visible-xs-block external" action="{{ path('cards_find') }}">
                             <div class="form-group">
@@ -149,6 +176,8 @@
     {% include 'AppBundle:Modale:card.html.twig' %}
 
     <script src="{{ asset('/bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { "callback": "fos.Router.setData" }) }}"></script>
+    {#
     {% if app.debug %}
         <script src="{{ path('fos_js_routing_js', { "callback": "fos.Router.setData" }) }}"></script>
     {% else %}
@@ -156,6 +185,7 @@
             <script src="{{ asset_url }}"></script>
         {% endjavascripts %}
     {% endif %}
+    #}
 
     {% javascripts output="js/extra.js"
         '@AppBundle/Resources/public/cdn/js/jquery.min.js'

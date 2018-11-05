@@ -28,7 +28,10 @@ class ApiController extends Controller {
         $response = new Response();
         $response->setPublic();
         $response->setMaxAge($this->container->getParameter('cache_expiration'));
-        $response->headers->add(['Access-Control-Allow-Origin' => '*']);
+        $response->headers->add([
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Language' => $request->getLocale()
+        ]);
 
         $jsonp = $request->query->get('jsonp');
 
@@ -36,7 +39,7 @@ class ApiController extends Controller {
         $em = $this->getDoctrine()->getManager();
 
         /* @var $list_packs \AppBundle\Entity\Pack[] */
-        $list_packs = $em->getRepository('AppBundle:Pack')->findBy([], ["dateRelease" => "ASC", "position" => "ASC"]);
+        $list_packs = $em->getRepository('AppBundle:Pack')->findAll();
 
         // check the last-modified-since header
         $lastModified = null;
@@ -113,7 +116,10 @@ class ApiController extends Controller {
         $response = new Response();
         $response->setPublic();
         $response->setMaxAge($this->container->getParameter('cache_expiration'));
-        $response->headers->add(['Access-Control-Allow-Origin' => '*']);
+        $response->headers->add([
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Language' => $request->getLocale()
+        ]);
 
         $jsonp = $request->query->get('jsonp');
 
@@ -168,7 +174,10 @@ class ApiController extends Controller {
         $response = new Response();
         $response->setPublic();
         $response->setMaxAge($this->container->getParameter('cache_expiration'));
-        $response->headers->add(['Access-Control-Allow-Origin' => '*']);
+        $response->headers->add([
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Language' => $request->getLocale()
+        ]);
 
         $jsonp = $request->query->get('jsonp');
 
@@ -176,7 +185,7 @@ class ApiController extends Controller {
         $em = $this->getDoctrine()->getManager();
 
         /* @var $list_cards \AppBundle\Entity\Card[] */
-        $list_cards = $em->getRepository('AppBundle:Card')->findBy([], ["code" => "ASC"]);
+        $list_cards = $em->getRepository('AppBundle:Card')->findAll();
 
         // check the last-modified-since header
         $lastModified = null;
@@ -243,7 +252,10 @@ class ApiController extends Controller {
         $response = new Response();
         $response->setPublic();
         $response->setMaxAge($this->container->getParameter('cache_expiration'));
-        $response->headers->add(['Access-Control-Allow-Origin' => '*']);
+        $response->headers->add([
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Language' => $request->getLocale()
+        ]);
 
         $jsonp = $request->query->get('jsonp');
 

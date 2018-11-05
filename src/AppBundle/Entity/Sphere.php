@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-class Sphere {
+class Sphere implements \Gedmo\Translatable\Translatable {
     /**
      * @var integer
      */
@@ -161,5 +161,15 @@ class Sphere {
      */
     public function getCards() {
         return $this->cards;
+    }
+
+    /*
+    * I18N vars
+    */
+    private $locale = 'en';
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

@@ -11,7 +11,7 @@ class CollectionController extends Controller {
     public function packsAction($reloaduser = false) {
         $categories = [];
         $categories[] = ["label" => "Core / Deluxe", "packs" => []];
-        $list_cycles = $this->getDoctrine()->getRepository('AppBundle:Cycle')->findBy([], ["position" => "ASC"]);
+        $list_cycles = $this->getDoctrine()->getRepository('AppBundle:Cycle')->findAllWithPacks();
 
         $owned_packs = $this->getUser()->getOwnedPacks();
         $oPacks = [];

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-class Cycle {
+class Cycle implements \Gedmo\Translatable\Translatable {
     /**
      * @var integer
      */
@@ -239,5 +239,15 @@ class Cycle {
      */
     public function getPacks() {
         return $this->packs;
+    }
+
+    /*
+    * I18N vars
+    */
+    private $locale = 'en';
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }
